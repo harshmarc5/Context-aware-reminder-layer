@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TabSpark</title>
+  <style>
+    :root {
+      --bg:         #ffffff;
+      --bg2:        #f8f9fa;
+      --text:       #202124;
+      --text2:      #5f6368;
+      --text3:      #bdc1c6;
+      --border:     #dadce0;
+      --border-f:   #4285f4;
+      --hover:      #f1f3f4;
+      --blue:       #4285f4;
+      --blue-d:     rgba(66,133,244,0.10);
+      --red:        #ea4335;
+      --red-d:      rgba(234,67,53,0.09);
+      --green:      #34a853;
+      --green-d:    rgba(52,168,83,0.09);
+      --yellow:     #fbbc04;
+      --shadow-s:   0 1px 6px rgba(32,33,36,0.14);
+      --shadow-m:   0 2px 20px rgba(32,33,36,0.20);
+      --shadow-l:   0 4px 28px rgba(32,33,36,0.22);
+      --r:          12px;
+      --r-search:   26px;
+      --ff:         -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--ff);
+      font-size: 14px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ═══════════════════════════════════════════
+       TOPBAR
+    ═══════════════════════════════════════════ */
+    .topbar {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: 52px;
+      display: flex; align-items: center;
+      justify-content: flex-end;
+      gap: 4px; padding: 0 16px;
+      background: var(--bg);
+      z-index: 100;
+    }
+
+    .top-link {
+      font-size: 13px; color: var(--text);
+      text-decoration: none; padding: 6px 10px;
+      border-radius: 4px; transition: background 0.15s;
+    }
+    .top-link:hover { background: var(--hover); }
+
+    .top-icon-btn {
+      width: 40px; height: 40px; border-radius: 50%;
+      border: none; background: transparent;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .top-icon-btn:hover { background: var(--hover); }
+
+    .avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: #5f6368; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 500; cursor: pointer;
+      flex-shrink: 0; border: 2px solid transparent;
+      transition: border-color 0.15s;
+    }
+    .avatar:hover { border-color: var(--blue); }
+
+    /* ═══════════════════════════════════════════
+       HERO
+    ═══════════════════════════════════════════ */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 52px 24px 80px;
+      gap: 0;
+    }
+
+    /* Google G */
+    .g-logo { width: 92px; height: 92px; margin-bottom: 26px; flex-shrink: 0; }
+
+    /* ═══════════════════════════════════════════
+       SEARCH BAR
+    ═══════════════════════════════════════════ */
+    .search-wrap {
+      width: 100%; max-width: 582px;
+      position: relative; margin-bottom: 28px;
+    }
+
+    .search-box {
+      width: 100%; height: 48px;
+      padding: 0 100px 0 50px;
+      border: 1px solid var(--border);
+      border-radius: var(--r-search);
+      background: var(--bg); color: var(--text);
+      font-family: var(--ff); font-size: 16px;
+      outline: none; caret-color: var(--text);
+      transition: box-shadow 0.2s, border-color 0.2s;
+    }
+    .search-box::placeholder { color: var(--text3); font-size: 15px; }
+    .search-box:hover { box-shadow: var(--shadow-s); border-color: transparent; }
+    .search-box:focus { box-shadow: var(--shadow-m); border-color: transparent; }
+
+    .s-left {
+      position: absolute; left: 16px; top: 50%;
+      transform: translateY(-50%); pointer-events: none;
+      display: flex; align-items: center;
+    }
+
+    /* Right icons row */
+    .s-right {
+      position: absolute; right: 12px; top: 50%;
+      transform: translateY(-50%);
+      display: flex; align-items: center; gap: 4px;
+    }
+
+    .s-icon-btn {
+      width: 38px; height: 38px; border-radius: 50%;
+      border: none; background: transparent;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: background 0.15s;
+      flex-shrink: 0;
+    }
+    .s-icon-btn:hover { background: var(--hover); }
+
+    /* AI mode button — special styling */
+    .ai-btn {
+      width: auto; padding: 0 10px; border-radius: 20px;
+      border: 1px solid var(--border);
+      background: linear-gradient(135deg, #e8f0fe, #fce8e6);
+      display: flex; align-items: center; gap: 5px;
+      font-size: 11px; font-weight: 600;
+      color: var(--blue); cursor: pointer;
+      height: 32px; white-space: nowrap;
+      transition: box-shadow 0.15s, background 0.15s;
+    }
+    .ai-btn:hover { box-shadow: 0 1px 6px rgba(66,133,244,0.3); background: linear-gradient(135deg, #d2e3fc, #fad2cf); }
+
+    .ai-btn-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue), var(--red));
+      flex-shrink: 0;
+      animation: aiDotPulse 2s ease-in-out infinite;
+    }
+    @keyframes aiDotPulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(66,133,244,0.4); }
+      50%      { box-shadow: 0 0 0 4px rgba(66,133,244,0); }
+    }
+
+    /* Search buttons row below search */
+    .search-btns {
+      display: flex; gap: 10px; margin-top: 18px;
+      justify-content: center;
+    }
+    .s-btn {
+      padding: 0 16px; height: 36px; border-radius: 4px;
+      border: 1px solid var(--border); background: var(--bg2);
+      font-family: var(--ff); font-size: 13px; color: var(--text2);
+      cursor: pointer; transition: box-shadow 0.15s, border-color 0.15s;
+    }
+    .s-btn:hover { box-shadow: var(--shadow-s); border-color: #c6c6c6; color: var(--text); }
+
+    /* ═══════════════════════════════════════════
+       REMINDER STRIP
+    ═══════════════════════════════════════════ */
+    .reminder-zone {
+      width: 100%; max-width: 582px;
+      margin-bottom: 20px;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+
+    .zone-top {
+      display: flex; align-items: center;
+      justify-content: space-between; padding: 0 2px;
+    }
+
+    .zone-label {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 0.9px; text-transform: uppercase;
+      color: var(--text2);
+    }
+
+    .pending-badge {
+      display: none;
+      background: var(--red); color: #fff;
+      font-size: 10px; font-weight: 700;
+      min-width: 18px; height: 18px;
+      border-radius: 9px; padding: 0 4px;
+      align-items: center; justify-content: center;
+      animation: badgePop 0.2s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    .pending-badge.on { display: flex; }
+    @keyframes badgePop {
+      from { transform:scale(0); opacity:0; }
+      to   { transform:scale(1); opacity:1; }
+    }
+
+    .zone-add-btn {
+      display: flex; align-items: center; gap: 4px;
+      font-size: 13px; color: var(--blue);
+      background: none; border: none; cursor: pointer;
+      font-family: var(--ff); padding: 4px 8px;
+      border-radius: 4px; transition: background 0.15s; font-weight: 500;
+    }
+    .zone-add-btn:hover { background: var(--blue-d); }
+
+    /* Add form */
+    #add-form {
+      display: none; flex-direction: column; gap: 10px;
+      padding: 16px 18px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      box-shadow: var(--shadow-s);
+    }
+    #add-form.open { display: flex; animation: formDrop 0.18s ease both; }
+    @keyframes formDrop {
+      from { opacity:0; transform:translateY(-6px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    .f-row { display: flex; gap: 8px; }
+
+    .f-in {
+      flex: 1; height: 38px; padding: 0 13px;
+      border: 1px solid var(--border); border-radius: 8px;
+      font-family: var(--ff); font-size: 13.5px; color: var(--text);
+      background: #fff; outline: none; caret-color: var(--blue);
+      transition: border-color 0.18s, box-shadow 0.18s;
+    }
+    .f-in::placeholder { color: var(--text3); }
+    .f-in:focus { border-color: var(--border-f); box-shadow: 0 0 0 2px rgba(66,133,244,0.18); }
+    .f-in.err { border-color: var(--red) !important; box-shadow: 0 0 0 2px rgba(234,67,53,0.15) !important; }
+
+    .f-sel {
+      height: 38px; padding: 0 10px; min-width: 116px;
+      border: 1px solid var(--border); border-radius: 8px;
+      font-family: var(--ff); font-size: 12.5px; color: var(--text);
+      background: #fff; outline: none; cursor: pointer;
+    }
+    .f-sel:focus { border-color: var(--border-f); }
+
+    .f-btns { display: flex; justify-content: flex-end; gap: 8px; margin-top: 2px; }
+
+    .f-cancel {
+      height: 36px; padding: 0 16px; background: none;
+      border: none; border-radius: 4px; font-family: var(--ff);
+      font-size: 13px; color: var(--text2); cursor: pointer;
+      transition: background 0.15s;
+    }
+    .f-cancel:hover { background: var(--hover); color: var(--text); }
+
+    .f-save {
+      height: 36px; padding: 0 20px;
+      background: var(--blue); border: none; border-radius: 4px;
+      font-family: var(--ff); font-size: 13px; font-weight: 600;
+      color: #fff; cursor: pointer;
+      transition: box-shadow 0.15s, background 0.15s;
+    }
+    .f-save:hover { background: #3b78e7; box-shadow: 0 2px 10px rgba(66,133,244,0.4); }
+
+    /* ═══════════════════════════════════════════
+       REMINDER CARDS — completely redesigned
+    ═══════════════════════════════════════════ */
+    #r-list { display: flex; flex-direction: column; gap: 6px; }
+
+    .rcard {
+      display: flex; align-items: center; gap: 0;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+      transition: box-shadow 0.2s, transform 0.15s;
+      position: relative;
+    }
+    .rcard:hover { box-shadow: var(--shadow-s); transform: translateY(-1px); }
+    .rcard-in { animation: cardSlide 0.28s cubic-bezier(0.34,1.56,0.64,1) both; }
+    @keyframes cardSlide {
+      from { opacity:0; transform:translateY(-8px) scale(0.98); }
+      to   { opacity:1; transform:translateY(0) scale(1); }
+    }
+
+    /* Left accent bar */
+    .rbar {
+      width: 4px; align-self: stretch; flex-shrink: 0;
+      background: var(--border);
+      transition: background 0.25s;
+    }
+    .rcard.pending .rbar { background: var(--red); }
+    .rcard.done-c  .rbar { background: var(--green); }
+
+    /* Spark dot */
+    .rdot-wrap {
+      padding: 0 12px 0 14px;
+      display: flex; align-items: center; flex-shrink: 0;
+    }
+
+    .rdot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--text3);
+      transition: background 0.25s, box-shadow 0.25s;
+      flex-shrink: 0;
+    }
+
+    /* ⚡ The spark animation — the core feature */
+    .rcard.pending .rdot {
+      background: var(--red);
+      animation: sparkPulse 1.8s ease-in-out infinite;
+    }
+    @keyframes sparkPulse {
+      0%   { box-shadow: 0 0 0 0   rgba(234,67,53,0.6); transform: scale(1); }
+      40%  { box-shadow: 0 0 0 6px rgba(234,67,53,0.0); transform: scale(1.15); }
+      100% { box-shadow: 0 0 0 0   rgba(234,67,53,0);   transform: scale(1); }
+    }
+
+    .rcard.done-c .rdot {
+      background: var(--green); animation: none;
+    }
+
+    /* ✨ Shimmer glow on pending card top edge */
+    .rcard.pending::before {
+      content: '';
+      position: absolute; top: 0; left: 4px; right: 0; height: 2px;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(234,67,53,0.6) 30%,
+        rgba(251,188,4,0.8) 50%,
+        rgba(234,67,53,0.6) 70%,
+        transparent 100%
+      );
+      background-size: 200% 100%;
+      animation: shimmer 2.5s ease-in-out infinite;
+    }
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; opacity:0.4; }
+      50%  { background-position: -200% 0; opacity:1; }
+      100% { background-position: -200% 0; opacity:0.4; }
+    }
+
+    /* Body */
+    .rbody { flex:1; min-width:0; padding: 11px 0 11px 2px; }
+
+    .rtitle {
+      font-size: 14px; font-weight: 500; color: var(--text);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      transition: color 0.2s;
+    }
+    .rcard.done-c .rtitle { text-decoration: line-through; color: var(--text2); font-weight: 400; }
+
+    .rmeta { display: flex; align-items: center; gap: 7px; margin-top: 3px; flex-wrap: wrap; }
+
+    .rurl {
+      font-size: 11.5px; color: var(--text2); text-decoration: none;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      max-width: 220px; transition: color 0.15s;
+    }
+    .rurl:hover { color: var(--blue); text-decoration: underline; }
+
+    .rtag {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11px; padding: 2px 9px;
+      border-radius: 12px; font-weight: 500;
+      flex-shrink: 0;
+    }
+    .rtag-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+    /* ── Action buttons — LARGE, obvious, with labels on hover ── */
+    .ractions {
+      display: flex; align-items: center; gap: 2px;
+      padding: 0 10px; flex-shrink: 0;
+    }
+
+    .raction {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 2px; position: relative;
+    }
+
+    .raction-btn {
+      width: 36px; height: 36px; border-radius: 50%;
+      border: none; background: transparent;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: background 0.15s, transform 0.15s;
+      flex-shrink: 0;
+    }
+    .raction-btn:hover { transform: scale(1.12); }
+    .raction-btn:active { transform: scale(0.95); }
+
+    .raction-btn.open-btn:hover  { background: rgba(66,133,244,0.12); }
+    .raction-btn.done-btn:hover  { background: rgba(52,168,83,0.12); }
+    .raction-btn.del-btn:hover   { background: rgba(234,67,53,0.12); }
+
+    /* SVG icons inside buttons */
+    .raction-btn svg { flex-shrink: 0; }
+
+    /* Tooltip label on hover */
+    .raction-btn::after {
+      content: attr(data-tip);
+      position: absolute; bottom: -20px; left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px; color: var(--text2); white-space: nowrap;
+      opacity: 0; transition: opacity 0.15s;
+      pointer-events: none; font-family: var(--ff);
+    }
+    .raction-btn:hover::after { opacity: 1; }
+
+    /* Empty state */
+    #empty {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 18px;
+      border: 1.5px dashed var(--border);
+      border-radius: var(--r); color: var(--text2);
+      font-size: 13px; line-height: 1.5;
+    }
+    .empty-ico { font-size: 18px; flex-shrink: 0; }
+
+    /* AI search modal */
+    #ai-modal {
+      display: none; position: fixed; inset: 0; z-index: 999;
+      background: rgba(32,33,36,0.5);
+      align-items: center; justify-content: center;
+    }
+    #ai-modal.open { display: flex; animation: fadeIn 0.2s ease both; }
+    @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+    .ai-box {
+      background: #fff; border-radius: 20px;
+      padding: 28px 32px; width: 520px; max-width: 90vw;
+      box-shadow: var(--shadow-l);
+      animation: modalUp 0.25s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    @keyframes modalUp {
+      from { transform:translateY(20px) scale(0.96); }
+      to   { transform:translateY(0)    scale(1); }
+    }
+
+    .ai-box-top {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .ai-title {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 17px; font-weight: 600; color: var(--text);
+    }
+
+    .ai-logo {
+      width: 32px; height: 32px; border-radius: 10px;
+      background: linear-gradient(135deg, #4285f4, #ea4335, #fbbc04, #34a853);
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .ai-close {
+      width: 32px; height: 32px; border-radius: 50%;
+      border: none; background: transparent;
+      font-size: 18px; color: var(--text2);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    .ai-close:hover { background: var(--hover); }
+
+    .ai-search-bar {
+      width: 100%; height: 48px; padding: 0 16px;
+      border: 2px solid var(--border-f); border-radius: 12px;
+      font-family: var(--ff); font-size: 15px; color: var(--text);
+      background: #fff; outline: none; margin-bottom: 16px;
+      caret-color: var(--blue);
+    }
+
+    .ai-suggestions {
+      display: flex; flex-direction: column; gap: 6px;
+    }
+
+    .ai-chip {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; border-radius: 10px;
+      background: var(--bg2); border: 1px solid var(--border);
+      cursor: pointer; font-size: 13px; color: var(--text2);
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .ai-chip:hover { background: var(--blue-d); border-color: var(--blue); color: var(--blue); }
+    .ai-chip-icon { font-size: 16px; }
+
+    .ai-footer { margin-top: 16px; font-size: 11.5px; color: var(--text3); text-align: center; }
+
+    /* ═══════════════════════════════════════════
+       SHORTCUTS
+    ═══════════════════════════════════════════ */
+    .shortcuts {
+      display: flex; gap: 4px;
+      flex-wrap: nowrap; /* single row */
+      justify-content: center;
+      max-width: 660px;
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .sc {
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      width: 82px; padding: 12px 4px 10px;
+      border-radius: 14px; text-decoration: none; color: var(--text);
+      transition: background 0.15s; cursor: pointer; flex-shrink: 0;
+    }
+    .sc:hover { background: var(--hover); }
+
+    .sc-icon {
+      width: 52px; height: 52px; border-radius: 50%;
+      background: #fff; border: 1.5px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      transition: box-shadow 0.15s, border-color 0.15s;
+      flex-shrink: 0;
+    }
+    .sc:hover .sc-icon { box-shadow: var(--shadow-s); border-color: #c0c4c9; }
+
+    .sc-label {
+      font-size: 11.5px; color: var(--text2);
+      white-space: nowrap; text-align: center;
+      overflow: hidden; text-overflow: ellipsis;
+      max-width: 78px;
+    }
+    .sc:hover .sc-label { color: var(--text); }
+
+    .sc-add .sc-icon { background: var(--bg2); }
+    .sc-plus {
+      font-size: 26px; color: var(--text2);
+      font-weight: 300; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ═══════════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════════ */
+    .footer {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      height: 46px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 22px;
+      border-top: 1px solid var(--border);
+      background: var(--bg);
+      font-size: 13px; color: var(--text2); z-index: 100;
+    }
+
+    .footer-left { display: flex; align-items: center; gap: 6px; }
+    .footer-right { display: flex; gap: 20px; }
+    .footer a { color: var(--text2); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<!-- Topbar -->
+<div class="topbar">
+  <a class="top-link" href="https://mail.google.com" target="_blank">Gmail</a>
+  <a class="top-link" href="https://www.google.com/imghp" target="_blank">Images</a>
+  <button class="top-icon-btn" title="Google apps">
+    <svg width="20" height="20" viewBox="0 0 24 24">
+      <circle cx="5"  cy="5"  r="1.8" fill="#5f6368"/>
+      <circle cx="12" cy="5"  r="1.8" fill="#5f6368"/>
+      <circle cx="19" cy="5"  r="1.8" fill="#5f6368"/>
+      <circle cx="5"  cy="12" r="1.8" fill="#5f6368"/>
+      <circle cx="12" cy="12" r="1.8" fill="#5f6368"/>
+      <circle cx="19" cy="12" r="1.8" fill="#5f6368"/>
+      <circle cx="5"  cy="19" r="1.8" fill="#5f6368"/>
+      <circle cx="12" cy="19" r="1.8" fill="#5f6368"/>
+      <circle cx="19" cy="19" r="1.8" fill="#5f6368"/>
+    </svg>
+  </button>
+  <div class="avatar" id="avatar">D</div>
+</div>
+
+<!-- Hero -->
+<div class="hero">
+
+  <!-- Google G logo -->
+  <svg class="g-logo" viewBox="0 0 92 92" xmlns="http://www.w3.org/2000/svg">
+    <path d="M92 47.1c0-3.2-.3-6.3-.8-9.3H47v17.6h25.2c-1.1 5.8-4.4 10.8-9.4 14.1v11.7h15.2C87.5 73.4 92 61.1 92 47.1z" fill="#4285F4"/>
+    <path d="M47 92c12.6 0 23.2-4.2 30.9-11.3l-15.1-11.7c-4.2 2.8-9.5 4.5-15.8 4.5-12.1 0-22.4-8.2-26.1-19.2H5.3v12.1C12.9 81.9 29.1 92 47 92z" fill="#34A853"/>
+    <path d="M20.9 54.3A27.4 27.4 0 0 1 19.5 46c0-2.9.5-5.6 1.4-8.3V25.6H5.3A45.9 45.9 0 0 0 0 46c0 7.4 1.8 14.4 5.3 20.4l15.6-12.1z" fill="#FBBC05"/>
+    <path d="M47 18.5c6.8 0 12.9 2.3 17.7 6.9l13.3-13.3C70.2 4.7 59.6 0 47 0 29.1 0 12.9 10.1 5.3 25.6l15.6 12.1C24.6 26.7 34.9 18.5 47 18.5z" fill="#EA4335"/>
+  </svg>
+
+  <!-- Search -->
+  <div class="search-wrap">
+    <span class="s-left">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <circle cx="11" cy="11" r="7.5" stroke="#9aa0a6" stroke-width="2"/>
+        <path d="M17 17L21.5 21.5" stroke="#9aa0a6" stroke-width="2.2" stroke-linecap="round"/>
+      </svg>
+    </span>
+
+    <input id="search" class="search-box" type="text"
+      placeholder="Search Google or type a URL"
+      autocomplete="off" spellcheck="false"/>
+
+    <span class="s-right">
+      <!-- Voice search (mic) -->
+      <button class="s-icon-btn" id="btn-voice" title="Search by voice">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <rect x="9" y="2" width="6" height="11" rx="3" fill="#4285f4"/>
+          <path d="M5 11.5a7 7 0 0 0 14 0" stroke="#34a853" stroke-width="2" stroke-linecap="round" fill="none"/>
+          <line x1="12" y1="18.5" x2="12" y2="21" stroke="#ea4335" stroke-width="2" stroke-linecap="round"/>
+          <line x1="9" y1="21" x2="15" y2="21" stroke="#fbbc04" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+
+      <!-- Google Lens -->
+      <button class="s-icon-btn" id="btn-lens" title="Search by image (Google Lens)">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="9.5" stroke="#ea4335" stroke-width="1.8"/>
+          <circle cx="12" cy="12" r="4" fill="none" stroke="#4285f4" stroke-width="2"/>
+          <line x1="1.5" y1="12" x2="6.5" y2="12" stroke="#fbbc04" stroke-width="2" stroke-linecap="round"/>
+          <line x1="17.5" y1="12" x2="22.5" y2="12" stroke="#34a853" stroke-width="2" stroke-linecap="round"/>
+          <line x1="12" y1="1.5" x2="12" y2="6.5" stroke="#4285f4" stroke-width="2" stroke-linecap="round"/>
+          <line x1="12" y1="17.5" x2="12" y2="22.5" stroke="#ea4335" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+
+      <!-- AI Search -->
+      <button class="ai-btn" id="btn-ai" title="AI-powered search">
+        <div class="ai-btn-dot"></div>
+        AI Search
+      </button>
+    </span>
+  </div>
+
+  <!-- Search suggestion buttons -->
+  <div class="search-btns">
+    <button class="s-btn" id="btn-google-search">Google Search</button>
+    <button class="s-btn" id="btn-lucky">I'm Feeling Lucky</button>
+  </div>
+
+  <!-- Reminders -->
+  <div class="reminder-zone" style="margin-top:28px;">
+    <div class="zone-top">
+      <div class="zone-label">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="#ea4335">
+          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+        </svg>
+        Reminders
+        <div class="pending-badge" id="badge">0</div>
+      </div>
+      <button class="zone-add-btn" id="btn-open-form">＋ Add</button>
+    </div>
+
+    <!-- Add form -->
+    <div id="add-form">
+      <div class="f-row">
+        <input class="f-in" id="f-title" placeholder="What do you need to do? e.g. HPCL Mock Interview"/>
+      </div>
+      <div class="f-row">
+        <input class="f-in" id="f-url" placeholder="Paste a link (optional)" style="flex:2"/>
+        <select class="f-sel" id="f-tag">
+          <option value="">No tag</option>
+          <option value="Study|#4285f4">📚 Study</option>
+          <option value="Job|#34a853">💼 Job</option>
+          <option value="Urgent|#ea4335">🔴 Urgent</option>
+          <option value="Health|#fbbc04">🏃 Health</option>
+          <option value="Finance|#34a853">💰 Finance</option>
+          <option value="Personal|#9c27b0">🌿 Personal</option>
+        </select>
+      </div>
+      <div class="f-btns">
+        <button class="f-cancel" id="btn-cancel">Cancel</button>
+        <button class="f-save" id="btn-save">Add Reminder</button>
+      </div>
+    </div>
+
+    <!-- List -->
+    <div id="r-list"></div>
+
+    <!-- Empty -->
+    <div id="empty">
+      <span class="empty-ico">📌</span>
+      <span>No reminders yet — tap <strong>＋ Add</strong> above. Each pending task will <strong>spark</strong> every time you open a new tab.</span>
+    </div>
+  </div>
+
+  <!-- Shortcuts -->
+  <div class="shortcuts" id="sc-grid"></div>
+
+</div><!-- /hero -->
+
+<!-- Footer -->
+<div class="footer">
+  <div class="footer-left">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="10" stroke="#5f6368" stroke-width="1.8"/>
+      <path d="M2 12h20M12 2a15.4 15.4 0 0 1 0 20M12 2a15.4 15.4 0 0 0 0 20" stroke="#5f6368" stroke-width="1.5" fill="none"/>
+    </svg>
+    India
+  </div>
+  <div class="footer-right">
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="#">Settings</a>
+  </div>
+</div>
+
+<!-- AI Search Modal -->
+<div id="ai-modal">
+  <div class="ai-box">
+    <div class="ai-box-top">
+      <div class="ai-title">
+        <div class="ai-logo">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" fill="white"/>
+          </svg>
+        </div>
+        Search with AI
+      </div>
+      <button class="ai-close" id="ai-close">✕</button>
+    </div>
+    <input class="ai-search-bar" id="ai-input" placeholder="Ask anything — summarise, explain, find..."/>
+    <div class="ai-suggestions">
+      <div class="ai-chip" data-q="Summarise today's top tech news"><span class="ai-chip-icon">📰</span> Summarise today's top tech news</div>
+      <div class="ai-chip" data-q="Explain quantum computing simply"><span class="ai-chip-icon">🧠</span> Explain quantum computing simply</div>
+      <div class="ai-chip" data-q="Help me prepare for a mock interview"><span class="ai-chip-icon">💼</span> Help me prepare for a mock interview</div>
+    </div>
+    <div class="ai-footer">Powered by Google AI · Results open in a new tab</div>
+  </div>
+</div>
+
+<script src="newtab.js"></script>
+</body>
+</html>
